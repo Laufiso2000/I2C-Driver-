@@ -15,7 +15,7 @@ inout AUD_SDAT;
 //reg FINSIHED; //produce a signal when transfer completed.
 reg ERROR; //assert if an NACK was received. 
  
-reg [5:0]SD_CONTROL; 
+reg [6:0]SD_CONTROL; 
 reg SDA; 	//Data line 
 reg SCL; 	//SCLK genneration 
 reg [9:0]COUNT; //clock 
@@ -42,9 +42,12 @@ always @ (posedge COUNT[9] or negedge RESET) begin
 	else begin 
 		if(!ENABLE) SD_CONTROL <= 0;  
 		else begin 
-			SD_CONTROL <= SD_CONTROL + 1; 
-			if(SD_CONTROL == 31) FINISHED = 1;
-			else FINISHED = 0;  
+			
+			if (SD_CONTROL < 40)SD_CONTROL <= SD_CONTROL + 1;
+			else SD_CONTROL <= 0; 
+			
+			if(SD_CONTROL == 32) FINISHED <= 1;
+			else FINISHED <= 0;  
 		end//end of else  
 	end//end of else  
 
@@ -62,49 +65,49 @@ end//of if(!RESET)
 else 
 case (SD_CONTROL)
 	
-	6'd0 : begin SDA <= 1; SCL <= 1; end 
+	7'd0 : begin SDA <= 1; SCL <= 1; end 
 	
 //start condtion 
-	6'd1 : SDA <= 0; 
-	6'd2 : SCL <= 0; 
+	7'd1 : SDA <= 0; 
+	7'd2 : SCL <= 0; 
 	
 // WM8731 MODE: 0 Adress: 0011010 
-	6'd3 : SDA <= 0;   
-	6'd4 : SDA <= 0;
-	6'd5 : SDA <= 1;
-	6'd6 : SDA <= 1;
-	6'd7 : SDA <= 0;
-	6'd8 : SDA <= 1;
-	6'd9 : SDA <= 0;
-	6'd10 : SDA <= 0; //set for write 
-	6'd11 : SDA <= 1'bz;//Slave Ack1  
+	7'd3 : SDA <= 0;   
+	7'd4 : SDA <= 0;
+	7'd5 : SDA <= 1;
+	7'd6 : SDA <= 1;
+	7'd7 : SDA <= 0;
+	7'd8 : SDA <= 1;
+	7'd9 : SDA <= 0;
+	7'd10 : SDA <= 0; //set for write 
+	7'd11 : SDA <= 1'bz;//Slave Ack1  
 	
 	//[15:9]Register address
 	//[8] MSB of DATA  
-	6'd12 : SDA <= DATA[15];   
-	6'd13 : SDA <= DATA[14];
-	6'd14 : SDA <= DATA[13];
-	6'd15 : SDA <= DATA[12];
-	6'd16 : SDA <= DATA[11];
-	6'd17 : SDA <= DATA[10];
-	6'd18 : SDA <= DATA[9];
-	6'd19 : SDA <= DATA[8]; //Start of DATA 
-	6'd20 : SDA <= 1'bz;//Slave A
+	7'd12 : SDA <= DATA[15];   
+	7'd13 : SDA <= DATA[14];
+	7'd14 : SDA <= DATA[13];
+	7'd15 : SDA <= DATA[12];
+	7'd16 : SDA <= DATA[11];
+	7'd17 : SDA <= DATA[10];
+	7'd18 : SDA <= DATA[9];
+	7'd19 : SDA <= DATA[8]; //Start of DATA 
+	7'd20 : SDA <= 1'bz;//Slave A
 
 	// DATA 
-	6'd21 : SDA <= DATA[7];   
-	6'd22 : SDA <= DATA[6];
-	6'd23 : SDA <= DATA[5];
-	6'd24 : SDA <= DATA[4];
-	6'd25 : SDA <= DATA[3];
-	6'd26 : SDA <= DATA[2];
-	6'd27 : SDA <= DATA[1];
-	6'd28 : SDA <= DATA[0];
-	6'd29 : SDA <= 1'bz;//Slave A
+	7'd21 : SDA <= DATA[7];   
+	7'd22 : SDA <= DATA[6];
+	7'd23 : SDA <= DATA[5];
+	7'd24 : SDA <= DATA[4];
+	7'd25 : SDA <= DATA[3];
+	7'd26 : SDA <= DATA[2];
+	7'd27 : SDA <= DATA[1];
+	7'd28 : SDA <= DATA[0];
+	7'd29 : SDA <= 1'bz;//Slave A
 
 	//STOP condtion 
-	6'd30 : begin SDA <= 0; SCL <=1; end 
-	6'd31 : begin SDA <= 1; end  
+	7'd30 : begin SDA <= 0; SCL <=1; end 
+	7'd31 : begin SDA <= 1; end  
 
 	endcase 
 end//of always 
