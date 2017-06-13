@@ -3,13 +3,13 @@
 // Description: This is an module to configure the WM8731 CODEC. See details
 // for detailed information on registers values. 
 // uses an I2C module also writen by the author to transfer data to device. 
-module WM8731(MCLK,RESET,END,SCL, SDA, SUB_ADD, DONE );
+module WM8731(MCLK,RESET,END,SCL, SDA);
 
 input MCLK;		//system clock(50 MHz)
 input RESET;	//System Reset 
 //input GO;		//this will be a key button on FPGA board to start things off. 
 
-output DONE;
+//output DONE;
 
 output END;	//Configuration completed succesfully.  
 output SCL;	//I2C clock signal connects to AUD_SCLK pin
@@ -18,7 +18,7 @@ inout  SDA;	//I2C data signal connects to AUD_SDAT pin
 
 // outputs for signal tap 2 testing.  
  
-output SUB_ADD; 
+//output SUB_ADD; 
  
 //---------------------------------------------------------------------------
 //									Paratameters 
@@ -159,7 +159,7 @@ always @ (posedge DONE or negedge RESET)begin
 	//else if(!GO) SUB_ADD = 0; //potential bug with key value. 
 	
 	else begin 
-		if (SUB_ADD < 9)
+		if (SUB_ADD < 10)
 			SUB_ADD = SUB_ADD + 7'b0000001; 
 		else begin 
 			END = 1;
@@ -172,56 +172,31 @@ always @ (posedge DONE or negedge RESET)begin
 // set the data value for each register depending on reg address. 
 //always@(posedge DONE) begin 
 case (SUB_ADD) 
- 	7'd0 : DATA = 16'h0017;//LEFT_LINE_IN;
+ 	7'd0 : DATA = 16'h1E00;	//RESET the CODEC. 
 	
- 	7'd1 : DATA = 16'h0217;// RIGHT_LINE_IN; 
+	7'd1 : DATA = 16'h0017;//LEFT_LINE_IN;
 	
- 	7'd2 : DATA = 16'h0479;//LEFT_HEAD_OUT;
+ 	7'd2 : DATA = 16'h0217;// RIGHT_LINE_IN; 
 	
- 	7'd3 : DATA = 16'h0679;//RIGHT_HEAD_OUT;
+ 	7'd3 : DATA = 16'h0497;//LEFT_HEAD_OUT;
 	
- 	7'd4 : DATA = 16'h0804;//ANALOGUE_AUDIO_PATH_CONTROL;
+ 	7'd4 : DATA = 16'h0697;//RIGHT_HEAD_OUT;
 	
- 	7'd5 : DATA = 16'h0A01;//DIGITAL_AUDIO_PATH_CONTROL;
+ 	7'd5 : DATA = 16'h0800;//ANALOGUE_AUDIO_PATH_CONTROL;
 	
- 	7'd6 : DATA = 16'h0C00;//POWER_DOWN_CONTROL;
+ 	7'd6 : DATA = 16'h0A00;//DIGITAL_AUDIO_PATH_CONTROL;
 	
- 	7'd7 : DATA = 16'h0E53;//DIGITAL_AUDIO_INTERFACE;
+ 	7'd7 : DATA = 16'h0C00;//POWER_DOWN_CONTROL;
 	
- 	7'd8 : DATA = 16'h100;//SAMPLING_CONTROL;
+ 	7'd8 : DATA = 16'h0E51;//DIGITAL_AUDIO_INTERFACE;
 	
- 	7'd9 : DATA = 16'h1201; //ACTIVE_CONTROL16  
+ 	7'd9 : DATA = 16'h100;//SAMPLING_CONTROL;
+	
+ 	7'd10 : DATA = 16'h1201; //ACTIVE_CONTROL16  
 endcase 
 
 end//of always
 
-/*
-// Data 
-// set the data value for each register depending on reg address. 
-always@(posedge DONE) begin 
-case (SUB_ADD) 
- 	7'd0 : DATA[8:0] = LEFT_LINE_IN;
-	
- 	7'd1 : DATA = RIGHT_LINE_IN; 
-	
- 	7'd2 : DATA = LEFT_HEAD_OUT;
-	
- 	7'd3 : DATA = RIGHT_HEAD_OUT;
-	
- 	7'd4 : DATA = ANALOGUE_AUDIO_PATH_CONTROL;
-	
- 	7'd5 : DATA = DIGITAL_AUDIO_PATH_CONTROL;
-	
- 	7'd6 : DATA = POWER_DOWN_CONTROL;
-	
- 	7'd7 : DATA = DIGITAL_AUDIO_INTERFACE;
-	
- 	7'd8 : DATA = SAMPLING_CONTROL;
-	
- 	7'd9 : DATA = ACTIVE_CONTROL;   
-endcase 
 
-end//of always
-*/
 
 endmodule 

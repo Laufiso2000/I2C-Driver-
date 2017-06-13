@@ -32,21 +32,21 @@ SCL = 1;
 //DataBuffer = DATA; 
 end 
 
-assign AUD_SCLK = ((SD_CONTROL >= 4) & (SD_CONTROL <= 31))? ~COUNT[9] : SCL; 
+assign AUD_SCLK = ((SD_CONTROL >= 4) & (SD_CONTROL <= 31))? ~MCLK : SCL;                                      
 assign AUD_SDAT = SDA; 
 
 
 
 
 
-always@(posedge MCLK) COUNT = COUNT + 1; 
+//always@(posedge MCLK) COUNT = COUNT + 1; 
 
 
 
 
 
 //I2C control 
-always @ (posedge COUNT[9] or negedge RESET) begin 
+always @ (posedge MCLK or negedge RESET) begin 
 
 	if(!RESET) begin 
 		SD_CONTROL = 0; 
@@ -81,7 +81,7 @@ end//of always
 
  
 //I2C operation
-always@(posedge COUNT[9] or negedge RESET) begin 
+always@(posedge MCLK or negedge RESET) begin 
 
 if (!RESET) begin 
 	SCL = 1; 
